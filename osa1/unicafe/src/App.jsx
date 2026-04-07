@@ -21,28 +21,31 @@ const Button = (props) => (
   </button>
 )
 
+const StatisticLine = (props) => {
+  if (props.text === "positive") {
+    return (
+      <p>
+        <span>{props.text} {props.value} % </span>
+      </p>
+    )
+  }
+  return (
+    <p>
+      <span>{props.text} {props.value}</span>
+    </p>
+  )
+}
+
 const Statistics = (props) => {
   console.log(props);
   return (
   <div>
-    <p>
-      <span>good {props.good}</span>
-    </p>
-    <p>
-      <span>neutral {props.neutral}</span>
-    </p>
-    <p>
-      <span>bad {props.bad}</span>
-    </p>
-     <p>
-      <span>all {props.total}</span>
-    </p>
-    <p>
-      <span>average {props.average}</span>
-    </p>
-    <p>
-      <span>positive {props.positive} % </span>
-    </p>
+    <StatisticLine text="good" value={props.good} />
+    <StatisticLine text="neutral" value={props.neutral} />
+    <StatisticLine text="bad" value={props.bad} />
+    <StatisticLine text="all" value={props.total} />
+    <StatisticLine text="average" value={props.average} />
+    <StatisticLine text="positive" value={props.positive} />
   </div>
   )
 }
