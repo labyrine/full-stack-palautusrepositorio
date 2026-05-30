@@ -96,7 +96,6 @@ const App = () => {
       if (persons.find((person) => person.name === newName) != undefined) {
         const personToUpdate = persons.find((person) => person.name === newName)
         updateNumber(personToUpdate.id, personObject)
-        //alert(`${newName} is already added to phonebook`)
       } else {
         personService
           .create(personObject)
