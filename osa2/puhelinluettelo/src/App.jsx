@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import personService from './services/persons'
+import Notification from './components/Notification'
+import ErrorNotification from './components/Notification'
 
 const Person = ({ person, deletePerson }) => {
   return <li>{person.name} {person.number} <DeletePersonButton deletePerson={deletePerson} id = {person.id} /></li>
@@ -62,6 +64,8 @@ const App = () => {
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [errorNotificationMessage, setErrorNotificationMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -103,6 +107,10 @@ const App = () => {
             setPersons(persons.concat(returnedPerson))      
             setNewName('')
             setNewNumber('')  
+            setNotificationMessage('Added ' + returnedPerson.name)
+            setTimeout(() => {          
+              setNotificationMessage(null)        
+            }, 5000)
           })
       }
     }
@@ -114,19 +122,32 @@ const App = () => {
           .deleteP(id)
             .then(deletedPerson => {
               setPersons(persons.filter(person => person.id !== deletedPerson.id))
+              setNotificationMessage('Deleted ' + deletedPerson.name)
+              setTimeout(() => {          
+              setNotificationMessage(null)  
+            }, 5000)
             })
       }
     }
 
     const updateNumber = (id, personObject) => {
-      const updateName = persons.find((person) => person.id === id)
-      if (window.confirm(updateName.name + " is allready in the phonebook, replace the old number with a new one?")) {
+      const updateHuman = persons.find((person) => person.id === id)
+      if (window.confirm(updateHuman.name + " is allready in the phonebook, replace the old number with a new one?")) {
         personService
           .update(id, personObject)
             .then(updatedPerson => {
               setPersons(persons.map(person => person.id === updatedPerson.id ? updatedPerson : person))  
               setNewName('')
               setNewNumber('')  
+              setNotificationMessage('Updated ' + updatedPerson.name)
+              setTimeout(() => {          
+              setNotificationMessage(null)
+            }, 5000)
+            })
+            .catch(error => {
+              setErrorNotificationMessage('Information of ' + updateHuman.name + ' has allready been removed from server')
+              setPersons(persons.filter(person => person.id !== updateHuman.id))
+              console.log('fail')
             })
       }
     }
@@ -134,6 +155,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+        <Notification message={notificationMessage} />
+        <ErrorNotification message={errorNotificationMessage} />
         <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h3>Add a new</h3>
         <PersonForm addPerson={addPerson} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
